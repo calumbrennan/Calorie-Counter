@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calorie & Protein Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            font-size: 16px;
+        }
+        button {
+            background: #0078ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005fcc;
+        }
+        .item {
+            background: #e8e8e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calorie & Protein Tracker</h2>
+
+    <label>Product Name</label>
+    <input type="text" id="product">
+
+    <label>Calories per Unit</label>
+    <input type="number" id="calories">
+
+    <label>Protein per Unit (g)</label>
+    <input type="number" id="protein">
+
+    <label>Quantity</label>
+    <input type="number" id="quantity" value="1">
+
+    <button onclick="addItem()">Add Item</button>
+
+    <h3>Total Calories: <span id="totalCalories">0</span></h3>
+    <h3>Total Protein: <span id="totalProtein">0</span> g</h3>
+    <h3>Protein Goal: 147 g</h3>
+    <h3>Remaining: <span id="remainingProtein">147</span> g</h3>
+
+    <div id="itemList"></div>
+</div>
+
+<script>
+    let totalCalories = Number(localStorage.getItem("totalCalories")) || 0;
+    let totalProtein = Number(localStorage.getItem("totalProtein")) || 0;
+
+    document.getElementById("totalCalories").innerText = totalCalories;
+    document.getElementById("totalProtein").innerText = totalProtein;
+    document.getElementById("remainingProtein").innerText = 147 - totalProtein;
+
+    function addItem() {
+        const product = document.getElementById("product").value;
+        const calories = parseFloat(document.getElementById("calories").value);
+        const protein = parseFloat(document.getElementById("protein").value);
+        const quantity = parseFloat(document.getElementById("quantity").value);
+
+        if (!product || !calories || !protein || !quantity) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        const itemCalories = calories * quantity;
+        const itemProtein = protein * quantity;
+
+        totalCalories += itemCalories;
+        totalProtein += itemProtein;
+
+        localStorage.setItem("totalCalories", totalCalories);
+        localStorage.setItem("totalProtein", totalProtein);
+
+        document.getElementById("totalCalories").innerText = totalCalories;
+        document.getElementById("totalProtein").innerText = totalProtein;
+        document.getElementById("remainingProtein").innerText = 147 - totalProtein;
+
+        const itemList = document.getElementById("itemList");
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerText = `${quantity} × ${product} = ${itemCalories} cal, ${itemProtein} g protein`;
+        itemList.appendChild(div);
+
+        document.getElementById("product").value = "";
+        document.getElementById("calories").value = "";
+        document.getElementById("protein").value = "";
+        document.getElementById("quantity").value = 1;
+    }
+
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js");
+    }
+</script>
+
+</body>
+</html>
